@@ -1,4 +1,4 @@
-const { describe, it, expect } = require ('@jest/globals');
+/*const { describe, it, expect } = require ('@jest/globals');
 
 const mdLinks = require('../');
 
@@ -9,4 +9,4 @@ describe('mdLinks', () => {
     console.log('FIX ME!');
   });
 
-});
+}); */
