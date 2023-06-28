@@ -8,5 +8,12 @@
     "createdAt": "2023-06-19T12:25:44.680Z",
     "version": "6.3.0",
     "commit": "c17498042fc79734cec390e6314cbe810e95bf4c"
+  },
+  "dependencies": {
+    "jest": "^29.5.0",
+    "node": "^20.3.1"
+  },
+  "scripts": {
+    "test": "jest --coverage"
   }
 }
