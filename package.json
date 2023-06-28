@@ -4,6 +4,7 @@
   "engines": {
     "node": ">=16.x"
   },
+  "type": "module",
   "bootcamp": {
     "createdAt": "2023-06-19T12:25:44.680Z",
     "version": "6.3.0",

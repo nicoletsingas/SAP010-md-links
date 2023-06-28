@@ -1,9 +1,16 @@
-// import { readFile } from "node:fs";
+import { readFile } from "node:fs";
 
-const fs = require('fs');
-
-function mdLinks () {
-
+function mdLinks (path, options) {
+  return new Promise((resolve, reject) => {
+    readFile(path, 'utf8', (err, data) => {
+      if (err){
+        reject(err.message)
+      } else{
+        resolve(console.log(data));
+      }
+    })
+  });
 };
+mdLinks("test.md");
 
-export { mdLinks };
+// export { mdLinks };
