@@ -1,6 +1,6 @@
-import { readFile } from "node:fs";
+import { readFile, readdirSync } from "node:fs";
 
-function mdLinks (path, options) {
+function readFiles (path){
   return new Promise((resolve, reject) => {
     readFile(path, 'utf8', (err, data) => {
       if (err){
@@ -11,6 +11,18 @@ function mdLinks (path, options) {
     })
   });
 };
-mdLinks("test.md");
+readFiles('test.md');
 
-// export { mdLinks };
+function readDirectory(directoryPath){
+  return new Promise((resolve, reject) => {
+    try {
+      const dirFiles = readdirSync(directoryPath);
+      resolve(console.log(dirFiles));
+    } catch (error) {
+      reject(error);
+    }
+    
+  });
+};
+readDirectory('./files')
+
