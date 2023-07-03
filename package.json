@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "eslint": "eslint --ext .js src/ test/",
+    "eslint": "eslint --fix --ext .js src/ test/",
     "pretest": "npm run eslint"
   },
   "devDependencies": {

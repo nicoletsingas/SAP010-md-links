@@ -1,52 +1,54 @@
 import { readFile, readdirSync, lstatSync } from "node:fs";
 
-const isDirectory = (path) => lstatSync(path).isDirectory(); //Verifica se o caminho é um diretorio
-export const isFile = (path) => lstatSync(path).isFile();
-
+// função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
   const elements = string.split('](');
   const text = elements[0].replace('[', '');
   const links = elements[1].replace(')', '');
-  return {file, text, links}; //possuem a mesma chave e valor
+  return {file, text, links};
 }
 
-// função que busca os links nos arquivos md
+//Função principal que le os arquivos, diretorio e extrai o link dos arquivos
 function mdLinks(path, options){
-  if (isDirectory(path)){
-    const files = readdirSync(path);
-    const mdFiles = files.filter((file) => file.endsWith('.md'));
-    
-    const result = mdFiles.map((file) => {
-    const fullPath = `${path}/${file}`;
-    return mdLinks(fullPath, options);
-  });
-    return Promise.all(result).then((results) => [].concat(...results));
-  }
+  try {
+    const stats = lstatSync(path);
 
-   if (isFile(path)){
-    if (!path.endsWith('.md')){
-      console.error('Nao foi encontrado nenhum arquivo md');
-      return;
-    }
-
-    return new Promise((resolve, reject) => {
-      const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
-
-      readFile(path, 'utf8', (err, data) => {
-        if (err){
-          reject(err.message)
-        } else{
-          const content = data.match(linkRegex);
-          const element = content.map((text) => extractElements (text, path));
-          if (options.validate){
-            resolve(console.log(element));
-          }else{
-            resolve(console.log(element));
-          }
-        }
+    if (stats.isDirectory()){
+      const files = readdirSync(path);
+      const mdFiles = files.filter((file) => file.endsWith('.md'));
+      const result = mdFiles.map((file) => {
+        const fullPath = `${path}/${file}`;
+        return mdLinks(fullPath, options);
       });
-    });
-  }
+
+      return Promise.all(result).then((results) => [].concat(...results));
+    }
+    
+    if (stats.isFile()){
+      if (!path.endsWith('.md')){
+        console.error('Nenhum arquivo md encontrado');
+      } else {
+        return new Promise((resolve, reject) => {
+          const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
+          readFile(path, 'utf8', (err, data) => {
+            if (err){
+              reject(err.message);
+            } else {
+              const content = data.match(linkRegex);
+              const element = content.map((text) => extractElements(text, path));
+              if (options.validate){
+                resolve(console.log(element));
+              }
+            }
+          });
+        });
+      }
+    } else {
+      console.error('Caminho inválido');
+    };
+  } catch (err) {
+    console.error(err.message);
+  };
 };
 
-mdLinks('./files', { validate: true })
+mdLinks('./files', { validate: true });
