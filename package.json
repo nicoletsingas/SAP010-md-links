@@ -18,6 +18,7 @@
     "marked-gfm-heading-id": "^3.0.4",
     "marked-mangle": "^1.0.1",
     "node": "^20.2.0",
+    "node-fetch": "^3.3.1",
     "test": "^3.3.0"
   },
   "scripts": {

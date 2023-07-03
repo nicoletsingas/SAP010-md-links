@@ -1,10 +1,30 @@
 import { readFile, readdirSync, lstatSync } from "node:fs";
+import fetch from 'node-fetch';
+
 // função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
   const elements = string.split('](');
   const text = elements[0].replace('[', '');
   const links = elements[1].replace(')', '');
   return {file, text, links};
+}
+
+//Função para validar os links utilizando o fetch
+function validateLinks(links){
+  const promises = links.map((link) => 
+    fetch(link.links)
+    .then((response) => {
+      link.status = response.status;
+      link.ok = response.ok ? 'OK' : 'FAIL';
+      return link
+    })
+    .catch(() => {
+      link.status = 404;
+      link.ok = 'FAIL';
+      return link;
+    })
+  )
+  return Promise.all(promises);
 }
 
 //Função principal que le os arquivos, diretorio e extrai o link dos arquivos
@@ -36,6 +56,14 @@ function mdLinks(path, options){
               const content = data.match(linkRegex);
               const element = content.map((text) => extractElements(text, path));
               if (options.validate){
+                validateLinks(element)
+                .then((validateLinks) => {
+                  resolve(console.log(validateLinks));
+                })
+                .catch((error) => {
+                  reject(error)
+                });
+              } else { 
                 resolve(console.log(element));
               }
             }
