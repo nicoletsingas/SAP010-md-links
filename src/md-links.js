@@ -50,7 +50,7 @@ function mdLinks(path, options){
   }
 }
 
-mdLinks('./files');
+mdLinks('./files', { validate: true });
 
 export default {
   mdLinks
