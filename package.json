@@ -22,7 +22,7 @@
   },
   "scripts": {
     "pretest": "npm run eslint",
-    "test": "jest",
+    "test": "jest --coverage",
     "eslint": "eslint --ext .js src/ test/"
   },
   "devDependencies": {
