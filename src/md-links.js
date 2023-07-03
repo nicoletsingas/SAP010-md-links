@@ -1,5 +1,4 @@
-import { readFile, readdirSync, lstatSync } from "node:fs";
-
+import { readdirSync, readFile, lstatSync } from 'fs';
 // função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
   const elements = string.split('](');
@@ -45,10 +44,14 @@ function mdLinks(path, options){
       }
     } else {
       console.error('Caminho inválido');
-    };
+    }
   } catch (err) {
     console.error(err.message);
-  };
-};
+  }
+}
 
 mdLinks('./files', { validate: true });
+
+export default {
+  mdLinks
+};
