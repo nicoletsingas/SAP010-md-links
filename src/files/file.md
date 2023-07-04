@@ -2,6 +2,10 @@
 
 [Documentação Node.js](https://nodejs.org/api/fs.html#fsreaddirsyncpath-options)
 
-[Curso em Video](https://www.cursoemvideo.com/)
+[Regex](https://regexr.com/)
 
-[Curso JavaScript](https://www.youtube.com/playlist?list=PLnDvRpP8BneysKU8KivhnrVaKpILD3gZ6)
+[EcmaScript Modules](https://blog.lsantos.dev/os-ecmascript-modules-estao-aqui/)
+
+[JavaScript W3Schools](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
+
+[Broken URL](httpshsdjhsjd://teste.com.br)
