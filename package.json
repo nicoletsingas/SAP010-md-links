@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "babel": "^6.23.0",
+    "cross-fetch": "^4.0.0",
     "fs": "^0.0.1-security",
     "init": "^0.1.2",
     "marked": "^5.1.0",

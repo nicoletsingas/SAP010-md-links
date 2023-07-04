@@ -1,5 +1,5 @@
 import { readFile, readdirSync, lstatSync } from "node:fs";
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 
 // função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
@@ -55,17 +55,13 @@ function mdLinks(path, options){
             } else {
               const content = data.match(linkRegex);
               const element = content.map((text) => extractElements(text, path));
-              if (options.validate){
-                validateLinks(element)
-                .then((validateLinks) => {
-                  resolve(console.log(validateLinks));
-                })
-                .catch((error) => {
-                  reject(error)
-                });
-              } else { 
-                resolve(console.log(element));
-              }
+              validateLinks(element)
+              .then((validateLinks) => {
+                resolve(validateLinks);
+              })
+              .catch((error) => {
+                reject(error)
+              });
             }
           });
         });
@@ -77,7 +73,5 @@ function mdLinks(path, options){
     console.error(err.message);
   }
 }
-
-mdLinks('files', { validate: true });
 
 export { mdLinks, extractElements };
