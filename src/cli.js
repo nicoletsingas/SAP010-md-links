@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import { mdLinks } from "./md-links.js";
 
 const path = process.argv[2];

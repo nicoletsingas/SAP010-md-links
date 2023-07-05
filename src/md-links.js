@@ -1,5 +1,6 @@
 import { readFile, readdirSync, lstatSync } from "node:fs";
 import fetch from 'cross-fetch';
+import chalk from 'chalk';
 
 // função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
@@ -20,7 +21,7 @@ function validateLinks(links){
     })
     .catch(() => {
       link.status = 404;
-      link.ok = 'FAIL';
+      link.ok = ('FAIL');
       return link;
     })
   )
@@ -45,7 +46,7 @@ function mdLinks(path, options){
     
     if (stats.isFile()){
       if (!path.endsWith('.md')){
-        console.error('Nenhum arquivo md encontrado');
+        console.log(chalk.yellow('Nenhum arquivo md encontrado'));
       } else {
         return new Promise((resolve, reject) => {
           const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
@@ -67,7 +68,7 @@ function mdLinks(path, options){
         });
       }
     } else {
-      console.error('Caminho inválido');
+      console.error(chalk.red('Caminho inválido'));
     }
   } catch (err) {
     console.error(err.message);
