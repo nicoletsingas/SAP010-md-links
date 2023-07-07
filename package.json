@@ -1,8 +1,11 @@
 {
   "name": "md-links-nicole-tsingas",
-  "version": "0.1.0",
+  "version": "1.1.1",
   "engines": {
     "node": ">=16.x"
+  },
+  "bin": {
+    "md-links": "./src/cli.js"
   },
   "type": "module",
   "bootcamp": {
@@ -37,7 +40,7 @@
     "jest": "^29.5.0"
   },
   "description": "lib que le arquivos .md executado no nodejs",
-  "main": "./src/cli.js",
+  "main": "src/cli.js",
   "directories": {
     "test": "test"
   },
