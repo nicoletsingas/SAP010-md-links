@@ -7,7 +7,8 @@ function extractElements(string, file){
   const elements = string.split('](');
   const text = elements[0].replace('[', '');
   const links = elements[1].replace(')', '');
-  return {file, text, links};
+  const totalElements = {file, text, links};
+  return totalElements;
 }
 
 //Função para validar os links utilizando o fetch
@@ -21,11 +22,22 @@ function validateLinks(links){
     })
     .catch(() => {
       link.status = 404;
-      link.ok = ('FAIL');
+      link.ok = 'FAIL';
       return link;
     })
   )
   return Promise.all(promises);
+}
+
+function statsLinks(links){
+  const linksSize = links.length;
+  const uniqueLinks = [... new Set(links.map((link) => link.links))].length;
+  const brokenLinks = links.filter((link) => link.ok === 'FAIL').length;
+  return {
+    total: linksSize,
+    unique: uniqueLinks,
+    broken: brokenLinks,
+  };
 }
 
 //Função principal que le os arquivos, diretorio e extrai o link dos arquivos
@@ -40,7 +52,6 @@ function mdLinks(path, options){
         const fullPath = `${path}/${file}`;
         return mdLinks(fullPath, options); //chamada recursiva
       });
-
       return Promise.all(result).then((results) => [].concat(...results));
     }
     
@@ -57,11 +68,21 @@ function mdLinks(path, options){
               const content = data.match(linkRegex);
               const element = content.map((text) => extractElements(text, path));
               validateLinks(element)
-              .then((validateLinks) => {
-                resolve(validateLinks);
+              .then((validatedLinks) => {
+                if (options.validate){
+                  resolve(validatedLinks);
+                } else if (options.stats) {
+                  const linkStats = statsLinks(validatedLinks);
+                  resolve({ stats: linkStats });
+                } else if (options.validate && options.stats) {
+                  const linkStats = statsLinks(validatedLinks);
+                  resolve({ links: validatedLinks, stats: linkStats });
+                } else {
+                  resolve(validateLinks(element))
+                }
               })
               .catch((error) => {
-                reject(error)
+                reject(error);
               });
             }
           });
@@ -75,4 +96,4 @@ function mdLinks(path, options){
   }
 }
 
-export { mdLinks, extractElements };
+export { mdLinks, extractElements, validateLinks, statsLinks };
