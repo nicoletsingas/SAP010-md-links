@@ -13,16 +13,7 @@ const options = {
 mdLinks(path, options)
   .then((results) => {
     if (options.validateAndStats){
-      results.forEach((link) => {
-        console.log(chalk.yellow('File:' + link.file));
-        console.log(chalk.magenta('Text:' + link.text));
-        console.log(chalk.cyan('Link:' + link.links));
-        console.log(chalk.green('Status HTTP:' + link.status))
-        console.log(chalk.green('OK:' + link.ok))
-        console.log('¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨')
-      });
         const linkStats = statsLinks(results);
-        console.log('Stats:');
         console.log(chalk.green('Total links:' + linkStats.total));
         console.log(chalk.yellow('Unique links:' + linkStats.unique));
         console.log(chalk.red('Broken links:' + linkStats.broken));
