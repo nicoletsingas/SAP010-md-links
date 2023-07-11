@@ -53,15 +53,16 @@ function mdLinks(path, options){
         return mdLinks(fullPath, options); //chamada recursiva
       });
       // aguarda todas as promessas gerada pelas chamadas recursiva
+      const emptyArray = [];
       return Promise.allSettled(result).then((results) => 
-      results.reduce((acumulator, resultObj) => {
+      results.reduce((accumulator, resultObj) => {
         if (resultObj.status === 'fulfilled'){
-          return acumulator.concat(resultObj.value);
+          return accumulator.concat(resultObj.value);
         } else {
           console.log(resultObj.reason)
-          return acumulator;
+          return accumulator;
         }
-      }, []) 
+      }, emptyArray) 
       );
     }
     
@@ -75,7 +76,7 @@ function mdLinks(path, options){
               reject(err.message);
             } else {
               if (data.trim() === ''){
-                reject('O arquivo md está vazio');
+                reject(chalk.red('O arquivo md está vazio'));
                 return;
               }
               const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
@@ -88,7 +89,7 @@ function mdLinks(path, options){
                 } else if (options.stats) {
                   const linkStats = statsLinks(validatedLinks);
                   resolve({ stats: linkStats });
-                } else if (options.validate && options.stats) {
+                } if (options.validate && options.stats) {
                   const linkStats = statsLinks(validatedLinks);
                   resolve({ links: validatedLinks, stats: linkStats });
                 } else {
