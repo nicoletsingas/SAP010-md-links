@@ -52,7 +52,17 @@ function mdLinks(path, options){
         const fullPath = `${path}/${file}`;
         return mdLinks(fullPath, options); //chamada recursiva
       });
-      return Promise.all(result).then((results) => [].concat(...results));
+      // aguarda todas as promessas gerada pelas chamadas recursiva
+      return Promise.allSettled(result).then((results) => 
+      results.reduce((acumulator, resultObj) => {
+        if (resultObj.status === 'fulfilled'){
+          return acumulator.concat(resultObj.value);
+        } else {
+          console.log(resultObj.reason)
+          return acumulator;
+        }
+      }, []) 
+      );
     }
     
     if (stats.isFile()){
@@ -60,11 +70,15 @@ function mdLinks(path, options){
         console.log(chalk.yellow('Nenhum arquivo md encontrado'));
       } else {
         return new Promise((resolve, reject) => {
-          const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
           readFile(path, 'utf8', (err, data) => {
             if (err){
               reject(err.message);
             } else {
+              if (data.trim() === ''){
+                reject('O arquivo md está vazio');
+                return;
+              }
+              const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
               const content = data.match(linkRegex);
               const element = content.map((text) => extractElements(text, path));
               validateLinks(element)
