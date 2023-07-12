@@ -42,7 +42,7 @@
   "description": "lib que le arquivos .md executado no nodejs",
   "main": "src/cli.js",
   "directories": {
-    "test": "test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
