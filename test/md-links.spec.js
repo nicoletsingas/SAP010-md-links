@@ -1,6 +1,5 @@
-const { describe, it, expect, } = require ('@jest/globals');
-
-import { mdLinks, extractElements, validateLinks, statsLinks } from '../src/md-links'
+import { describe, it, expect, } from '@jest/globals';
+import { mdLinks, extractElements, validateLinks, statsLinks } from '../src/md-links';
 
 const mockData = [
   {
@@ -31,7 +30,7 @@ describe('extractElements', () => {
 });
 
 describe('validateLinks', () => {
-  it('should correctly validate the links',  async () => {
+  it('should return status "ok" after validate a valid link',  async () => {
     const links = [
       { link: 'https://exemplo.com/valido' },
       { link: 'https://exemplo.com/invalido' },
@@ -55,10 +54,10 @@ describe('validateLinks', () => {
       error.message;
     });
   });
-}); 
+});
 
 describe('statsLinks', () => {
-  it('Should return informations about total, unique and broken links when its --stats', () => {
+  it('should return informations about total, unique and broken links when its --stats', () => {
     const options = {
       validate: false,
       stats: true,
@@ -78,6 +77,73 @@ describe('mdLinks', () => {
     expect(typeof mdLinks).toBe('function');
   });
 
+  it('should return properties of a valid diretory', () => {
+   const path = './src/files'
+   const options = {};
+   const result = mdLinks(path, options);
+   return result.then((links) => {
+    links.forEach((link) => {
+      expect(link).toHaveProperty('links');
+      expect(link).toHaveProperty('text');
+      expect(link).toHaveProperty('file');
+    });
+   });
+  });
+    
+  it('should return links informations when its --validate', async () => {
+    const resultexpected = [
+      {
+        file: './src/files/file.md',
+        text: 'Markdown',
+        links: 'https://pt.wikipedia.org/wiki/Markdown',
+        status: 200,
+        ok: 'OK',
+      },
+      {
+        file: './src/files/file.md',
+        text: 'Documentação Node.js',
+        links: 'https://nodejs.org/api/fs.html#fsreaddirsyncpath-options',
+        status: 200,
+        ok: 'OK',
+      },
+      {
+        file: './src/files/file.md',
+        text: 'Regex',
+        links: 'https://regexr.com/',
+        status: 200,
+        ok: 'OK',
+      },
+      {
+        file: './src/files/file.md',
+        text: 'EcmaScript Modules',
+        links: 'https://blog.lsantos.dev/os-ecmascript-modules-estao-aqui/',
+        status: 200,
+        ok: 'OK',
+      },
+      {
+        file: './src/files/file.md',
+        text: 'JavaScript W3Schools',
+        links: 'https://developer.mozilla.org/pt-BR/docs/Web/JavaScript',
+        status: 200,
+        ok: 'OK',
+      },
+      {
+        file: './src/files/file.md',
+        text: 'Broken URL',
+        links: 'httpshsdjhsjd://teste.com.br',
+        status: 404,
+        ok: 'FAIL',
+      },
+    ];
+    const result = await mdLinks('./src/files/file.md', {validate: true})
+    expect(result).toEqual(resultexpected)
+  })
+  
+  it('should return informations about total and unique links when its --stats', async () => {
+    const resultexpected = { stats: { total: 6, unique: 6, broken: 1 }};
+    const result = await mdLinks('./src/files/file.md', {stats: true});
+    expect(result).toEqual(resultexpected);
+  });
 
   
 }); 
