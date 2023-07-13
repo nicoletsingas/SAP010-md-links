@@ -2,7 +2,6 @@ import { readFile, readdirSync, lstatSync } from "node:fs";
 import fetch from 'cross-fetch';
 import chalk from 'chalk';
 
-// função para separar o texto do link e retirar os caracteres []()
 function extractElements(string, file){
   const elements = string.split('](');
   const text = elements[0].replace('[', '');
@@ -11,7 +10,6 @@ function extractElements(string, file){
   return totalElements;
 }
 
-//Função para validar os links utilizando o fetch
 function validateLinks(links){
   const promises = links.map((link) => 
     fetch(link.links)
@@ -40,7 +38,6 @@ function statsLinks(links){
   };
 }
 
-//Função principal que le os arquivos, diretorio e extrai o link dos arquivos
 function mdLinks(path, options){
   try {
     const stats = lstatSync(path);
@@ -50,9 +47,9 @@ function mdLinks(path, options){
       const mdFiles = files.filter((file) => file.endsWith('.md'));
       const result = mdFiles.map((file) => {
         const fullPath = `${path}/${file}`;
-        return mdLinks(fullPath, options); //chamada recursiva
+        return mdLinks(fullPath, options); 
       });
-      // aguarda todas as promessas gerada pelas chamadas recursiva
+ 
       const emptyArray = [];
       return Promise.allSettled(result).then((results) => 
       results.reduce((accumulator, resultObj) => {
