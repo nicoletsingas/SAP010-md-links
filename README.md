@@ -54,7 +54,8 @@ Comando: <br>
 
 
 ## 3. Fluxograma 📝
-Fluxograma do projeto
+Fluxograma do projeto <br>
+
 ![fluxograma](./src/images/fluxograma.png)
 
 ## 4. Tecnologias Utilizadas 🚀
