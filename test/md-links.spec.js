@@ -145,5 +145,52 @@ describe('mdLinks', () => {
     expect(result).toEqual(resultexpected);
   });
 
-  
+  it('should return informations about total, unique and broken links when its --validade and --stats', async () => {
+    const resultExpected = [
+        {
+          file: './src/files/file.md',
+          text: 'Markdown',
+          links: 'https://pt.wikipedia.org/wiki/Markdown',
+          status: 200,
+          ok: 'OK',
+        },
+        {
+          file: './src/files/file.md',
+          text: 'Documentação Node.js',
+          links: 'https://nodejs.org/api/fs.html#fsreaddirsyncpath-options',
+          status: 200,
+          ok: 'OK',
+        },
+        {
+          file: './src/files/file.md',
+          text: 'Regex',
+          links: 'https://regexr.com/',
+          status: 200,
+          ok: 'OK',
+        },
+        {
+          file: './src/files/file.md',
+          text: 'EcmaScript Modules',
+          links: 'https://blog.lsantos.dev/os-ecmascript-modules-estao-aqui/',
+          status: 200,
+          ok: 'OK',
+        },
+        {
+          file: './src/files/file.md',
+          text: 'JavaScript W3Schools',
+          links: 'https://developer.mozilla.org/pt-BR/docs/Web/JavaScript',
+          status: 200,
+          ok: 'OK',
+        },
+        {
+          file: './src/files/file.md',
+          text: 'Broken URL',
+          links: 'httpshsdjhsjd://teste.com.br',
+          status: 404,
+          ok: 'FAIL',
+        },
+      ];
+    const result = await mdLinks('./src/files/file.md', {validate: true, stats: true});
+    expect(result).toEqual(resultExpected);
+  });
 }); 
