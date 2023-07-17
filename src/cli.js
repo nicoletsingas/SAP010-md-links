@@ -13,10 +13,10 @@ const options = {
 mdLinks(path, options)
   .then((results) => {
     if (options.validateAndStats){
-        const linkStats = statsLinks(results);
-        console.log(chalk.green('Total links:' + linkStats.total));
-        console.log(chalk.yellow('Unique links:' + linkStats.unique));
-        console.log(chalk.red('Broken links:' + linkStats.broken));
+      const linkStats = statsLinks(results);
+      console.log(chalk.green('Total links:' + linkStats.total));
+      console.log(chalk.yellow('Unique links:' + linkStats.unique));
+      console.log(chalk.red('Broken links:' + linkStats.broken));
 
     } else if (options.validate){
       results.forEach((link) => {

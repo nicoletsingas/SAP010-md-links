@@ -49,7 +49,6 @@ function mdLinks(path, options){
         const fullPath = `${path}/${file}`;
         return mdLinks(fullPath, options); 
       });
- 
       const emptyArray = [];
       return Promise.allSettled(result).then((results) => 
       results.reduce((accumulator, resultObj) => {
