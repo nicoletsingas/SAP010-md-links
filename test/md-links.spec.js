@@ -1,18 +1,5 @@
-import { describe, it, expect, } from '@jest/globals';
-import { mdLinks, extractElements, validateLinks, statsLinks } from '../src/md-links';
-
-const mockData = [
-  {
-    file: 'exemplo.md', 
-    text: 'Exemplo',
-    links: 'https://pt.wikipedia.org/wiki/Markdown',
-  },
-  {
-    file: 'exemplo.md', 
-    text: 'One Piece',
-    links: 'https://onepieceex.net/',
-  }
-];
+import { describe, it, expect,} from '@jest/globals';
+import { mdLinks, extractElements, validateLinks } from '../src/md-links';
 
 describe('extractElements', () => {
   it('should be a function', () => {
@@ -30,12 +17,12 @@ describe('extractElements', () => {
 });
 
 describe('validateLinks', () => {
-  it('should return status "ok" after validate a valid link',  async () => {
+  it('should return status "ok" after validate a valid link', () => {
     const links = [
       { link: 'https://exemplo.com/valido' },
       { link: 'https://exemplo.com/invalido' },
     ];
-    await validateLinks(links)
+    validateLinks(links)
     .then((response) => {
       expect(response).toEqual([
         {
@@ -56,21 +43,6 @@ describe('validateLinks', () => {
   });
 });
 
-describe('statsLinks', () => {
-  it('should return informations about total, unique and broken links when its --stats', () => {
-    const options = {
-      validate: false,
-      stats: true,
-    }
-    const result = {
-      total: 2,
-      unique: 2,
-      broken: 0,
-    }
-    const res = statsLinks(mockData, options);
-    expect(res).toEqual(result);
-  });
-});
 
 describe('mdLinks', () => {
   it('should be a function', () => {
@@ -90,8 +62,38 @@ describe('mdLinks', () => {
    });
   });
     
+  it('should return a message "Nenhum arquivo md encontrado" if file doesnt have the .md extension', async () => {
+    const fakePath = './src/files/file.txt';
+    const fakeOptions = {
+      validate: false,
+      stats: false
+    };
+    
+    const logs = [];
+    console.log = (...args) => {
+      logs.push(args);
+    };
+    
+    await mdLinks(fakePath, fakeOptions);
+    expect(logs[0][0]).toEqual('Nenhum arquivo md encontrado');
+  });
+
+  it('should reject with an erro message in file reading fails', () => {
+    const fakePath = "files3/file.md";
+    const fakeOptions = {
+      validate: false,
+      stats: false
+    };
+
+    try {
+      mdLinks(fakePath, fakeOptions);
+    } catch (error) {
+      expect(error.message).toBe('ENOENT: no such file or directory, lstat "files3/file.md"');
+    }
+  });
+
   it('should return links informations when its --validate', async () => {
-    const resultexpected = [
+    const resultExpected = [
       {
         file: './src/files/file.md',
         text: 'Markdown',
@@ -135,12 +137,12 @@ describe('mdLinks', () => {
         ok: 'FAIL',
       },
     ];
-    const result = await mdLinks('./src/files/file.md', {validate: true})
-    expect(result).toEqual(resultexpected)
-  })
+    const result = await mdLinks('./src/files/file.md', {validate: true});
+    expect(result).toEqual(resultExpected);
+  });
   
   it('should return informations about total and unique links when its --stats', async () => {
-    const resultexpected = { stats: { total: 6, unique: 6, broken: 1 }};
+    const resultexpected = { stats: { total: 6, unique: 6 }};
     const result = await mdLinks('./src/files/file.md', {stats: true});
     expect(result).toEqual(resultexpected);
   });

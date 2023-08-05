@@ -11,5 +11,10 @@ module.exports = {
         "sourceType": "module"
     },
     "rules": {
+        "linebreak-style": 0,
+        "prefer-destructuring": 0,
+        "no-param-reassign": ["error", { "props": false }],
+        "import/extensions": 0,
+        "import/prefer-default-export": 0,
     }
 }
