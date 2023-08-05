@@ -1,8 +1,7 @@
 import { readFile, readdirSync, lstatSync } from "node:fs";
 import fetch from 'cross-fetch';
-import chalk from 'chalk';
 
-function extractElements(string, file){
+export function extractElements(string, file){
   const elements = string.split('](');
   const text = elements[0].replace('[', '');
   const links = elements[1].replace(')', '');
@@ -10,7 +9,7 @@ function extractElements(string, file){
   return totalElements;
 }
 
-function validateLinks(links){
+export function validateLinks(links){
   const promises = links.map((link) => 
     fetch(link.links)
     .then((response) => {
@@ -27,84 +26,75 @@ function validateLinks(links){
   return Promise.all(promises);
 }
 
-function statsLinks(links){
-  const linksSize = links.length;
-  const uniqueLinks = [... new Set(links.map((link) => link.links))].length;
-  const brokenLinks = links.filter((link) => link.ok === 'FAIL').length;
-  return {
-    total: linksSize,
-    unique: uniqueLinks,
-    broken: brokenLinks,
-  };
-}
-
-function mdLinks(path, options){
+export function mdLinks(path, options){
   try {
     const stats = lstatSync(path);
 
     if (stats.isDirectory()){
       const files = readdirSync(path);
       const mdFiles = files.filter((file) => file.endsWith('.md'));
+      const subDirectories = files.filter((file) => lstatSync(`${path}/${file}`).isDirectory());
+
       const result = mdFiles.map((file) => {
         const fullPath = `${path}/${file}`;
-        return mdLinks(fullPath, options); 
+        return mdLinks(fullPath, options);
       });
+
+      const subDirectoryResults = subDirectories.map((subDir) => {
+        const subDirPath = `${path}/${subDir}`;
+        return mdLinks(subDirPath, options);
+      })
+
+      const combinedResults = result.concat(subDirectoryResults);
+
       const emptyArray = [];
-      return Promise.allSettled(result).then((results) => 
-      results.reduce((accumulator, resultObj) => {
-        if (resultObj.status === 'fulfilled'){
-          return accumulator.concat(resultObj.value);
-        } else {
-          console.log(resultObj.reason)
-          return accumulator;
-        }
-      }, emptyArray) 
+      return Promise.allSettled(combinedResults).then((results) => 
+        results.reduce((accumulator, resultObj) => {
+          if (resultObj.status === 'fulfilled'){
+            return accumulator.concat(resultObj.value);
+          } else {
+            console.log(resultObj.reason);
+            return accumulator;
+          }
+        }, emptyArray) 
       );
     }
     
     if (stats.isFile()){
       if (!path.endsWith('.md')){
-        console.log(chalk.yellow('Nenhum arquivo md encontrado'));
+        console.log('Nenhum arquivo md encontrado');
       } else {
         return new Promise((resolve, reject) => {
           readFile(path, 'utf8', (err, data) => {
             if (err){
-              reject(err.message);
+              reject('Erro ao ler arquivo');
             } else {
               if (data.trim() === ''){
-                reject(chalk.red('O arquivo md está vazio'));
+                reject(`File: ${path}: O arquivo md está vazio `);
                 return;
               }
               const linkRegex = /\[[^\]]+\]\(([^)]+)\)/gm;
               const content = data.match(linkRegex);
               const element = content.map((text) => extractElements(text, path));
-              validateLinks(element)
-              .then((validatedLinks) => {
-                if (options.validate){
+              if (options.validate){
+                validateLinks(element)
+                .then((validatedLinks) => {
                   resolve(validatedLinks);
-                } else if (options.stats) {
-                  const linkStats = statsLinks(validatedLinks);
-                  resolve({ stats: linkStats });
-                } if (options.validate && options.stats) {
-                  const linkStats = statsLinks(validatedLinks);
-                  resolve({ links: validatedLinks, stats: linkStats });
-                } else {
-                  resolve(validateLinks(element))
-                }
-              })
-              .catch((error) => {
-                reject(error);
-              });
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+              } else {
+                resolve(element);
+              }
             }
           });
-        });
+        })
       }
     } else {
-      console.error(chalk.red('Caminho inválido'));
+      console.error('Caminho inválido');
     }
   } catch (err) {
     console.error(err.message);
   }
 }
-
-export { mdLinks, extractElements, validateLinks, statsLinks };
